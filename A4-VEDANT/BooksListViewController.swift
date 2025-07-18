@@ -24,47 +24,49 @@ class BooksListViewController: UIViewController, UITableViewDataSource, UITableV
         tableView.reloadData()
     }
 
-    // MARK: Table View Methods
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return books.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: "BookCell", for: indexPath)
         let book = books[indexPath.row]
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
 
         cell.textLabel?.text = book.title
         cell.detailTextLabel?.text = "Author: \(book.author ?? "")"
 
-        let statusLabel = UILabel()
-        statusLabel.font = UIFont.systemFont(ofSize: 12)
-        statusLabel.textColor = .gray
-
-        if book.borrower == "" {
-            statusLabel.text = "Available, tap to checkout"
-        } else if book.borrower == loggedInUsername {
-            statusLabel.text = "Checked out, tap to return"
-        } else {
-            statusLabel.text = "Unavailable"
+        switch book.borrower {
+        case "":
+            cell.accessoryView = statusLabel(text: "Available, tap to checkout", color: .systemGreen)
+        case loggedInUsername:
+            cell.accessoryView = statusLabel(text: "Checked out, tap to return", color: .systemBlue)
+        default:
+            cell.accessoryView = statusLabel(text: "Unavailable", color: .systemRed)
         }
 
-        statusLabel.sizeToFit()
-        cell.accessoryView = statusLabel
-
         return cell
+    }
+
+    func statusLabel(text: String, color: UIColor) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = color
+        label.sizeToFit()
+        return label
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let book = books[indexPath.row]
 
-        if book.borrower == "" {
+        switch book.borrower {
+        case "":
             book.borrower = loggedInUsername
-        } else if book.borrower == loggedInUsername {
+        case loggedInUsername:
             book.borrower = ""
-        } else {
-            let alert = UIAlertController(title: "Not allowed", message: "This book is borrowed by another user.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
+        default:
+            showAlert(title: "Not allowed", message: "This book is borrowed by another user.")
             return
         }
 
@@ -74,5 +76,11 @@ class BooksListViewController: UIViewController, UITableViewDataSource, UITableV
 
     @IBAction func logoutPressed(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
+    }
+
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }

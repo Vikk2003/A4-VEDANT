@@ -1,31 +1,15 @@
-	
-//
-//  LoginVIewController.swift
-//  A4-VEDANT
-//
-//  Created by Vedant on 2025-07-14.
-//
-
-import Foundation
 import UIKit
 import CoreData
 
 class LoginViewController: UIViewController {
 
     @IBOutlet weak var Heading: UILabel!
-    
     @IBOutlet weak var UserNameIndicator: UILabel!
-    
-    
     @IBOutlet weak var PasswordIndicator: UILabel!
-    
-    
-    
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
 
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    var users: [User] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +28,6 @@ class LoginViewController: UIViewController {
             u2.username = "user2"
             u2.password = "pass2"
 
-            // Add 3 sample books
             let b1 = Book(context: context)
             b1.title = "Swift"
             b1.author = "Apple"
@@ -65,8 +48,13 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func loginPressed(_ sender: UIButton) {
-        let username = usernameField.text ?? ""
-        let password = passwordField.text ?? ""
+        let username = usernameField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let password = passwordField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        guard !username.isEmpty, !password.isEmpty else {
+            showAlert(title: "Missing Fields", message: "Please enter both username and password.")
+            return
+        }
 
         let request: NSFetchRequest<User> = User.fetchRequest()
         request.predicate = NSPredicate(format: "username == %@ AND password == %@", username, password)
@@ -74,10 +62,14 @@ class LoginViewController: UIViewController {
         if let result = try? context.fetch(request), result.count > 0 {
             performSegue(withIdentifier: "toBooksList", sender: username)
         } else {
-            let alert = UIAlertController(title: "Login Failed", message: "Invalid credentials", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
+            showAlert(title: "Login Failed", message: "Invalid credentials.")
         }
+    }
+
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
