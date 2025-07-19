@@ -75,12 +75,21 @@ class LoginViewController: UIViewController {
         let request: NSFetchRequest<User> = User.fetchRequest()
         request.predicate = NSPredicate(format: "username == %@ AND password == %@", username, password)
 
-        if let result = try? context.fetch(request), result.count > 0 {
-            performSegue(withIdentifier: "toBooksList", sender: username)
-        } else {
-            showAlert(title: "Login Failed", message: "Invalid credentials.")
+        do {
+            let result = try context.fetch(request)
+            if result.count > 0 {
+                print("✅ Login successful for: \(username)")
+                performSegue(withIdentifier: "toBooksList", sender: username)
+            } else {
+                print("❌ Invalid credentials: \(username), \(password)")
+                showAlert(title: "Login Failed", message: "Invalid username or password.")
+            }
+        } catch {
+            print("🔥 CoreData fetch error: \(error.localizedDescription)")
+            showAlert(title: "Error", message: "Something went wrong. Please try again.")
         }
     }
+
 
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

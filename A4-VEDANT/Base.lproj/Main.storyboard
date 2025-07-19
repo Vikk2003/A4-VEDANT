@@ -93,7 +93,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="gray" title="Login Now"/>
                                 <connections>
-                                    <segue destination="zMK-Ec-1ib" kind="show" identifier="toBookList" id="eVn-qM-hZO"/>
+                                    <action selector="loginPressed:" destination="PLA-kf-UIN" eventType="touchUpInside" id="jz4-47-UN4"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -107,11 +107,12 @@
                         <outlet property="UserNameIndicator" destination="XQ1-iF-srx" id="JYa-Aq-fSS"/>
                         <outlet property="passwordField" destination="bT9-qT-8CB" id="TVr-G5-5iJ"/>
                         <outlet property="usernameField" destination="ORc-0f-gOK" id="5y1-hH-y4x"/>
+                        <segue destination="zMK-Ec-1ib" kind="show" identifier="toBooksList" id="abj-fS-baw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hah-Kz-z44" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1048" y="104"/>
+            <point key="canvasLocation" x="1045" y="104"/>
         </scene>
         <!--Books List View Controller-->
         <scene sceneID="qLb-4W-YTy">
