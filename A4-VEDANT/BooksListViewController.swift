@@ -12,10 +12,29 @@ class BooksListViewController: UIViewController, UITableViewDataSource, UITableV
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        addBackgroundImage()
+        
         tableView.dataSource = self
         tableView.delegate = self
-        welcomeLabel.text = "Welcome, \(loggedInUsername ?? "")"
+        
+        welcomeLabel.text = "Welcome to the book list"
         fetchBooks()
+    }
+
+    func addBackgroundImage() {
+        let imageView = UIImageView(image: UIImage(named: "library_bg"))
+        imageView.contentMode = .scaleAspectFill
+        imageView.alpha = 0.3
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.insertSubview(imageView, at: 0)
+
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: view.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4)
+        ])
     }
 
     func fetchBooks() {
@@ -29,13 +48,14 @@ class BooksListViewController: UIViewController, UITableViewDataSource, UITableV
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BookCell", for: indexPath)
+        let reuseId = "BookCell"
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseId) ??
+                   UITableViewCell(style: .subtitle, reuseIdentifier: reuseId)
+        
         let book = books[indexPath.row]
-
         cell.textLabel?.text = book.title
         cell.detailTextLabel?.text = "Author: \(book.author ?? "")"
-
+        
         switch book.borrower {
         case "":
             cell.accessoryView = statusLabel(text: "Available, tap to checkout", color: .systemGreen)
@@ -75,7 +95,11 @@ class BooksListViewController: UIViewController, UITableViewDataSource, UITableV
     }
 
     @IBAction func logoutPressed(_ sender: UIButton) {
-        navigationController?.popViewController(animated: true)
+        if let nav = navigationController {
+            nav.popToRootViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     func showAlert(title: String, message: String) {

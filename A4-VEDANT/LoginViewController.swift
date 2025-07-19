@@ -13,7 +13,23 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        addBackgroundImage()
         preloadDataIfNeeded()
+    }
+
+    func addBackgroundImage() {
+        let imageView = UIImageView(image: UIImage(named: "library_bg"))
+        imageView.contentMode = .scaleAspectFill
+        imageView.alpha = 0.3
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.insertSubview(imageView, at: 0)
+
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: view.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4)
+        ])
     }
 
     func preloadDataIfNeeded() {
